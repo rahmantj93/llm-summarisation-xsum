@@ -16,18 +16,23 @@ the `facebook/bart-large-cnn` model.
 ## Results
 | Approach      | ROUGE-1 | ROUGE-2 | ROUGE-L |
 |---------------|---------|---------|---------|
-| Zero-shot     | 0.2045  | 0.0344  | 0.1415  |
-| Few-shot      | 0.2045  | 0.0344  | 0.1415  |
-| PE Zero-shot  | 0.2007  | 0.0301  | 0.1364  |
-| PE Few-shot   | 0.1945  | 0.0271  | 0.1355  |
+| Zero-shot     | 0.2042  | 0.0343  | 0.1415  |
+| Few-shot      | 0.2042  | 0.0343  | 0.1415  |
+| PE Zero-shot  | 0.2015  | 0.0298  | 0.1365  |
+| PE Few-shot   | 0.1061  | 0.0077  | 0.0818  |
 
 ## Key Findings
-- BART's encoder-decoder architecture does not benefit from in-context 
-  examples, causing zero-shot and few-shot to produce identical results
-- Prompt engineering with strict length constraints reduced ROUGE scores 
-  slightly due to summaries being cut off
-- BART was fine-tuned on CNN/DailyMail, explaining the performance gap 
-  on XSum's more abstractive single-sentence summaries
+- **Zero-shot and Few-shot produce identical results** because BART's 
+  encoder-decoder architecture does not benefit from in-context examples 
+  the way instruction-tuned decoder-only LLMs do
+- **PE Zero-shot scored slightly lower** than baseline, as the instruction 
+  prefix altered BART's summarisation behaviour without meaningfully 
+  improving it
+- **PE Few-shot scored substantially lower** — embedding a demonstration 
+  example inside the prompt consumed valuable input-token budget (1024 
+  limit) and caused the target article to be truncated, degrading quality
+- BART was fine-tuned on CNN/DailyMail's multi-sentence summaries, explaining 
+  the performance gap on XSum's concise single-sentence format
 
 ## Technologies Used
 - Python
@@ -40,9 +45,16 @@ the `facebook/bart-large-cnn` model.
 1. Open the notebook in Google Colab
 2. Enable T4 GPU (Runtime → Change runtime type)
 3. Add your HuggingFace token to Colab Secrets as `HF_TOKEN`
-4. Run all cells in order
+4. Run all cells in order (takes ~15 minutes on T4 GPU)
 
 ## Dataset
-BBC news articles with single-sentence summaries
-[EdinburghNLP/xsum](https://huggingface.co/datasets/EdinburghNLP/xsum)
+[EdinburghNLP/xsum](https://huggingface.co/datasets/EdinburghNLP/xsum) — 
+BBC news articles with single-sentence abstractive summaries.
 
+## References
+- Lewis, M. et al. (2020) *BART: Denoising Sequence-to-Sequence Pre-training 
+  for Natural Language Generation*. arXiv:1910.13461
+- Narayan, S., Cohen, S.B. and Lapata, M. (2018) *Don't Give Me the Details, 
+  Just the Summary!* arXiv:1808.08745
+- Wolf, T. et al. (2020) *HuggingFace's Transformers: State-of-the-art Natural 
+  Language Processing*. arXiv:1910.03771
